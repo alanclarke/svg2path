@@ -1,0 +1,28 @@
+Why Your JavaScript Sucks
+
+It is a while since JavaScript passed long path from toy language to serious player, yet when you browse through the plethora of code and different discussions there is a feeling that most of the people still confused with the language. Suprisingly even those who know and use it everyday. What can you do about it?
+
+1. objects & primitives
+2. type coercion
+3. ==
+4. +
+5. functions
+6. prototype
+
+WebAnimationInstance
+    functions: WebAnimationFunctionCollection
+    animation: WebAnimation
+    targetElement: Element
+WebAnimation
+    timing: WebTiming
+    functions: WebAnimationFunctionCollection
+    animate (any target, optional float startTime)
+    animateWithParent (any target, WebAnimationGroup? parentTimeline, optional float startTime)
+WebTiming
+    startDelay: number
+    duration: number
+    iterationCount: number
+    speed: number
+    direction: number
+    timingFunction: function
+    fill: number

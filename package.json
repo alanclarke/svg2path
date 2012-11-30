@@ -1,0 +1,22 @@
+{
+	"name": "pathicon-from-svg",
+	"version": "0.0.1",
+	"description": "convert from svg to a path for use with raphael",
+	"keywords" : [
+		"svg", "pathicon"
+	],
+	"homepage": "https://github.com/eckoit/pathicon-from-svg",
+	"main": "lib/convert",
+	"bin" : "bin/pathiconize.js",
+	"repository" : { 
+		"type" : "git",
+	    "url" : "http://github.com/ryanramage/pathicon-from-svg.git"
+	 },
+	 "dependencies": {
+	 	"async": "0.1.22",
+	 	"raphael-browserify": "2.1.0",
+	 	"eve": "0.3.5",
+	 	"nomnom": "1.5.2",
+	 	"jsdom": "0.2.19"
+	 }
+}

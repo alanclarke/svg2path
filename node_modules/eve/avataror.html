@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Reveal</title>
+        <script src="eve.js"></script>
+        <script src="../jquery.js"></script>
+        <script>
+            var A = (function () {
+                
+                // Canvas
+                
+                (function (isCanvas) {
+                    if (isCanvas) {
+                        eve.on("A.Canvas.src", function (w, h) {
+                            var img = this[0];
+                            setTimeout(function () {
+                                var d = document.createElement("canvas");
+                                d.width = w;
+                                d.height = h;
+                                var c = d.getContext("2d");
+                                c.drawImage(img, 0, 0, w, h);
+                                blur(c, 0, 0, w, h, 3);
+                                eve("A.DOM.blur", null, c.canvas.toDataURL());
+                            });
+                        });
+                    }
+                    function blur(c, x, y, w, h, amount, keep) {
+                        amount = amount || 2;
+                        var id = c.getImageData(x, y, w, h),
+                            id2 = c.getImageData(x, y, w, h);
+                        for (var i = 0, ii = id.data.length; i < ii; i++) if (!keep || (i + 1) % 4) {
+                            var av = 0, counter = 0;
+                            for (var xx = -amount; xx <= amount; xx++) {
+                                for (var yy = -amount; yy <= amount; yy++) {
+                                    var j = i + w * yy * 4 + xx * 4;
+                                    if (id2.data[j] != null && (id2.data[j + 4 - (j + 1) % 4] || (j + 1) % 4 == 0)) {
+                                        av += id2.data[j];
+                                        counter++;
+                                    }
+                                }
+                            }
+                            id.data[i] = Math.round(av / counter);
+                        }
+                        c.putImageData(id, x, y);
+                    }
+                })(document.createElement("canvas").getContext);
+
+                // DOM
+
+                (function () {
+                    var $div, $subdiv, $win, isdrag, left = 50, top = 100;
+                    eve.on("A.DOM.start", function (image) {
+                        $(image).load(function () {
+                            eve("A.DOM.loaded", null, image);
+                        });
+                    });
+                    eve.on("A.DOM.loaded", function (image) {
+                        var $image = $(image),
+                            src = $image.attr("src"),
+                            w = image.width(),
+                            h = image.height();
+                        if (src) {
+                            $div = $(document.createElement("div"));
+                            $subdiv = $(document.createElement("div"));
+                            $win = $(document.createElement("div"));
+
+                            $div.insertBefore($image);
+                            $div.append($subdiv);
+                            $div.append($win);
+                            $div.css({
+                                width: $image.width(),
+                                height: $image.height(),
+                                position: "relative",
+                                background: "#4b545d"
+                            });
+                            $subdiv.css({
+                                width: $image.width(),
+                                height: $image.height(),
+                                opacity: .5,
+                                background: "url(" + src + ")"
+                            });
+                            $win.css({
+                                "-webkit-border-radius": 50,
+                                width: 100,
+                                height: 100,
+                                left: 50,
+                                top: 100,
+                                position:"absolute",
+                                border: "solid 1px #ccc",
+                                background: "#ccc url(" + src + ") no-repeat -50px -100px"
+                            });
+                            $image.hide();
+                            eve("A.Canvas.src", image, w, h);
+                            $win.mousedown(function (e) {
+                                eve("A.drag.start", e);
+                            });
+                            $(document).mousemove(function (e) {
+                                eve("A.drag.going", e);
+                            }).mouseup(function (e) {
+                                eve("A.drag.finished", e);
+                            });
+                        }
+                    });
+                    eve.on("A.DOM.blur", function (src) {
+                        $subdiv.css({
+                            background: "url(" + src + ")"
+                        });
+                    });
+                    eve.on("A.drag.start", function () {
+                        isdrag = {
+                            x: this.pageX,
+                            y: this.pageY
+                        };
+                    });
+                    eve.on("A.drag.going", function () {
+                        if (isdrag) {
+                            var l = left + this.pageX - isdrag.x,
+                                t = top + this.pageY - isdrag.y;
+                            $win.css({
+                                left: l,
+                                top: t,
+                                "background-position": -l + "px " + (-t) + "px"
+                            });
+                        }
+                    });
+                    eve.on("A.drag.finished", function () {
+                        left = left + this.pageX - isdrag.x;
+                        top = top + this.pageY - isdrag.y;
+                        isdrag = null;
+                    });
+                })();
+                
+                
+                // Storage
+                
+                (function (isStorage) {
+                    var src;
+                    if (isStorage) {
+                        eve.on("A.Canvas.src", function (w, h) {
+                            src = this.attr("src");
+                            if (localStorage[src]) {
+                                eve("A.DOM.blur", null, localStorage[src]);
+                                return false;
+                            }
+                        })(-1);
+                        eve.on("A.DOM.blur", function (dataURL) {
+                            localStorage[src] = dataURL;
+                        })(-1);
+                    }
+                })((function () {
+                    try {
+                        return "localStorage" in window && window.localStorage != null;
+                    } catch (e) {
+                        return false;
+                    }
+                })());
+
+                return function (image) {
+                    eve("A.DOM.start", null, image);
+                };
+                
+            })();
+            
+            
+            $(function () {
+                A($("img"));
+            });
+        </script>
+    </head>
+    <body>
+        <img src="http://dribbble.com/system/users/3174/screenshots/143575/monomesmall.png?1302069031">
+    </body>
+</html>

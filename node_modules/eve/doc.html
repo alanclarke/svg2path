@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- Doc·tor -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eve Reference</title>
+<link rel="stylesheet" href="doctor.css">
+</head><body>
+<div class="dr-doc"><ol class="dr-toc"><li><a href="#eve" class="dr-method "><span>eve()</span></a></li><li><a href="#eve.listeners" class="dr-method "><span>eve.listeners()</span></a></li><li><a href="#eve.nt" class="dr-method "><span>eve.nt()</span></a></li><li><a href="#eve.on" class="dr-method "><span>eve.on()</span></a></li><li><a href="#eve.unbind" class="dr-method "><span>eve.unbind()</span></a></li><li><a href="#eve.version" class="dr-property  "><span>eve.version</span></a></li></ol><h1>Eve Reference</h1><h2 id="eve">eve</h2>
+<div class="dr-method "><p>Fires event with given <code>name</code>, given scope and other parameters.</p>
+<strong>Arguments</strong>
+<dl class="dr-parameters"><dt class="dr-param">name</dt>
+<dd class="dr-type"><em class="dr-type-string">string</em></dd>
+<dd class="dr-description">name of the event, dot (<code>.</code>) or slash (<code>/</code>) separated</dd>
+<dt class="dr-param">scope</dt>
+<dd class="dr-type"><em class="dr-type-object">object</em></dd>
+<dd class="dr-description">context for the event handlers</dd>
+<dt class="dr-param">varargs</dt>
+<dd class="dr-type"><em class="dr-type-...">...</em></dd>
+<dd class="dr-description">the rest of arguments will be sent to event handlers</dd>
+</dl>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-array">array</em> <span class="dr-description">array of errors, if any. Each element of the array is in format:</span></p>
+<pre class="javascript code"><code>{
+    error: <span class="c">// error message,</span>
+    func: <span class="c">// handler that caused error</span>
+}
+</code></pre>
+</div><h3 id="eve.listeners">eve.listeners</h3>
+<div class="dr-method "><p>Internal method which gives you array of all event handlers that will be triggered by the given <code>name</code>.</p>
+<strong>Arguments</strong>
+<dl class="dr-parameters"><dt class="dr-param">name</dt>
+<dd class="dr-type"><em class="dr-type-string">string</em></dd>
+<dd class="dr-description">name of the event, dot (<code>.</code>) or slash (<code>/</code>) separated</dd>
+</dl>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-array">array</em> <span class="dr-description">array of event handlers</span></p>
+</div><h3 id="eve.nt">eve.nt</h3>
+<div class="dr-method "><p>Could be used inside event handler to figure out actual name of the event.</p>
+<strong>Arguments</strong>
+<dl class="dr-parameters"><dt class="dr-param optional">subname</dt>
+<dd class="dr-optional">optional</dd>
+<dd class="dr-type"><em class="dr-type-string">string</em></dd>
+<dd class="dr-description">subname of the event</dd>
+</dl>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-string">string</em> <span class="dr-description">name of the event, if <code>subname</code> is not specified</span></p>
+<p>or</p>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-boolean">boolean</em> <span class="dr-description"><code>true</code>, if current event’s name contains <code>subname</code></span></p>
+</div><h3 id="eve.on">eve.on</h3>
+<div class="dr-method "><p>Binds given event handler with a given name. You can use wildcards “<code>*</code>” for the names:</p>
+<pre class="javascript code"><code>eve.on(<i>"*.under.*"</i>, f);
+eve(<i>"mouse.under.floor"</i>); <span class="c">// triggers f</span>
+</code></pre>
+<p>Use <a href="#eve" class="dr-link">eve</a> to trigger the listener.</p>
+<strong>Arguments</strong>
+<dl class="dr-parameters"><dt class="dr-param">name</dt>
+<dd class="dr-type"><em class="dr-type-string">string</em></dd>
+<dd class="dr-description">name of the event, dot (<code>.</code>) or slash (<code>/</code>) separated, with optional wildcards</dd>
+<dt class="dr-param">f</dt>
+<dd class="dr-type"><em class="dr-type-function">function</em></dd>
+<dd class="dr-description">event handler function</dd>
+</dl>
+<p class="dr-returns"><strong class="dr-title">Returns:</strong> <em class="dr-type-boolean">boolean</em> <span class="dr-description"><code>false</code> if given function already assigned as event handler to given name, <code>true</code> otherwise</span></p>
+</div><h3 id="eve.unbind">eve.unbind</h3>
+<div class="dr-method "><p>Removes given function from the list of event listeners assigned to given name.</p>
+<strong>Arguments</strong>
+<dl class="dr-parameters"><dt class="dr-param">name</dt>
+<dd class="dr-type"><em class="dr-type-string">string</em></dd>
+<dd class="dr-description">name of the event, dot (<code>.</code>) or slash (<code>/</code>) separated, with optional wildcards</dd>
+<dt class="dr-param">f</dt>
+<dd class="dr-type"><em class="dr-type-function">function</em></dd>
+<dd class="dr-description">event handler function</dd>
+</dl>
+</div><h3 id="eve.version">eve.version</h3>
+<div class="dr-property  "><em class="dr-type dr-type-string">string</em><p>Current version of the library.</p>
+</div></div></body></html>

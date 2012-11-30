@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Para</title>
+        <script src="eve.js"></script>
+        <script>
+			eve("newton.init", "token", 0, -9.8);
+			eve.on("newton.init", function (x, y) {
+				
+			});
+            eve.on("aaa.bbb", function () {
+                console.log(eve.nt());
+                eve("ccc.ddd");
+                console.log(eve.nt());
+            });
+            eve.on("ccc.ddd", function () {
+                console.log(eve.nt());
+            });
+            eve("aaa.bbb");
+        </script>
+    </head>
+    <body>
+        <p>
+          Foo bar foo bar foo bar <a href="foo">a link</a> and more text.
+          Text text <a href="test">foo link</a>. More text bla bla.
+        </p>
+    </body>
+</html>
