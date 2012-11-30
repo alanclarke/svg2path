@@ -3,6 +3,7 @@
 
 var convert = require('../lib/convert'),
 	fs      = require('fs'),
+	url     = require('url'),
 	path    = require('path'),
 	async   = require('async'),
 	opts = require("nomnom")
@@ -53,19 +54,37 @@ function processNounProject(name, cb){
 
 	    var to_process = [];
 
+	    // a collection page
 	    $("section ul.icons li.icon").each(function() {
 	    	var icon_id  = $(this).attr('id'),
 	    		svg_elem = $(this).find('svg'),
 	    		$meta    = $(this).find('.icon-meta'),
-	    		name     = $meta.find('.icon-name a').text().replace(' ', '_'),
-	    		dest     = destination(name + '-' + icon_id, o_dir);
+	    		iconname = $meta.find('.icon-name a').text().replace(' ', '_'),
+	    		dest     = destination(iconname + '-' + icon_id, o_dir);
 
+	    	if (icon_id.indexOf('otherIcon') < 0 && iconname.length > 0 && icon_id.length > 0 ) {
+		    	to_process.push({
+		    		dest: dest,
+		    		svg_elem: svg_elem
+		    	})
+	    	}
+	    });
+
+	    // an individual icon page
+	    $("#icon-container li.current span.icon svg").each(function() {
+
+	    	var hash     = url.parse(name).hash,
+	    		icon_id  = (/\d+/i).exec(hash)[0],
+	    		svg_elem = $('#otherIcon-' + icon_id + ' svg'),
+	    		iconname = $('h1.noun-name').text().replace(' ', '_'),
+	    		dest     = destination(iconname + '-' + icon_id, o_dir);
 	    	to_process.push({
 	    		dest: dest,
 	    		svg_elem: svg_elem
 	    	})
-
+	    	
 	    });
+
 		async.forEachLimit(to_process, 5, processOnlineSVG, function(err){
 		    if (err) console.log('Error: ', err);
 		});
