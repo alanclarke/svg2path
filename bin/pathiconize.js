@@ -7,30 +7,41 @@ var convert = require('../lib/convert'),
 	path    = require('path'),
 	async   = require('async'),
 	opts = require("nomnom")
-		.option('file', {
+		.option('svg', {
 			position: 0,
 			list: true,
-			help: 'the svg or nounproject file to convert'
+			help: 'the svg file or nounproject page to convert'
 		})
 		.option('dir', {
 			abbr: 'o',
 
 			help: 'the directory to write the file[s] to.'
 		})	
+		.option('sheet', {
+			abbr: 's',
+			help: 'a json sprite sheet to add the icon to.'
+		})
 	   .parse();
 
 var output_dir = opts.dir || false;
+var sheet_file = opts.sheet || false;
 
 if (output_dir) {
 	if (!fs.existsSync(output_dir)){
 		fs.mkdirSync(output_dir);
 	}
 }
+if (sheet_file) {
+	sheet_file = new Store(sheet_file);
+}
 
 
-async.forEachLimit(opts.file, 5, process, function(err){
+async.forEachLimit(opts.svg, 5, process, function(err){
     if (err) console.log('Error: ', err);
-
+    if (sheet_file) {
+    	sheet_file.save();
+    }
+    console.log('done');
 });
 
 
@@ -59,13 +70,14 @@ function processNounProject(name, cb){
 	    	var icon_id  = $(this).attr('id'),
 	    		svg_elem = $(this).find('svg'),
 	    		$meta    = $(this).find('.icon-meta'),
-	    		iconname = $meta.find('.icon-name a').text().replace(' ', '_'),
-	    		dest     = destination(iconname + '-' + icon_id, o_dir);
+	    		iconname = $meta.find('.icon-name a').text().replace(' ', '_') + '-' + icon_id,
+	    		dest     = destination(iconname , o_dir);
 
 	    	if (icon_id.indexOf('otherIcon') < 0 && iconname.length > 0 && icon_id.length > 0 ) {
 		    	to_process.push({
 		    		dest: dest,
-		    		svg_elem: svg_elem
+		    		svg_elem: svg_elem,
+		    		name: iconname
 		    	})
 	    	}
 	    });
@@ -76,28 +88,24 @@ function processNounProject(name, cb){
 	    	var hash     = url.parse(name).hash,
 	    		icon_id  = (/\d+/i).exec(hash)[0],
 	    		svg_elem = $('#otherIcon-' + icon_id + ' svg'),
-	    		iconname = $('h1.noun-name').text().replace(' ', '_'),
-	    		dest     = destination(iconname + '-' + icon_id, o_dir);
+	    		iconname = $('h1.noun-name').text().replace(' ', '_')+ '-' + icon_id,
+	    		dest     = destination(iconname , o_dir);
 	    	to_process.push({
 	    		dest: dest,
-	    		svg_elem: svg_elem
+	    		svg_elem: svg_elem,
+	    		name : iconname
 	    	})
 	    	
 	    });
-
-		async.forEachLimit(to_process, 5, processOnlineSVG, function(err){
-		    if (err) console.log('Error: ', err);
-		});
-
+		async.forEachLimit(to_process, 5, processOnlineSVG, cb);
 	  }
 	});	
 	
 }
 
 function processOnlineSVG(details, cb) {
-	console.log('writing: ', details.dest);
 	var path_str = convert( details.svg_elem.html() );
-	write(details.dest, path_str, cb);
+	write(details.dest, path_str, details.name, cb);
 }
 
 
@@ -107,7 +115,8 @@ function processFile(name, cb) {
 		if (err) return cb(err);		
 		var path_str = convert(data);
 		var dest = destination(name, output_dir);
-		write(dest, path_str, cb);
+		var name = path.basename(name, '.svg');
+		write(dest, path_str, name, cb);
 	});	
 }
 
@@ -125,7 +134,48 @@ function destination(original_name, o_dir) {
 
 
 
-function write(dest, path_str, callback) {
-	fs.writeFile(dest, path_str, callback);
+function write(dest, path_str, name, callback) {
+	if (sheet_file) {
+		sheet_file.set(name, path_str);
+	} else {
+		fs.writeFile(dest, path_str, function(err) {
+			if (err) return callback(err);			
+		});
+	}
+	callback(null);
 }
+
+
+function Store(path) {
+  this.path = path;
+  if (!fs.existsSync(path)) {
+  	fs.writeFileSync(path, JSON.stringify({}));
+  	this.Store = {};
+  } else {
+  	this.Store = JSON.parse(fs.readFileSync(path));
+  }
+}
+
+Store.prototype.get = function(key) {
+  if (!key) return clone(this.Store);
+  if (!this.Store[key]) return;
+  return clone(this.Store[key]);
+}
+
+Store.prototype.set = function(key, value) {
+  this.Store[key] = value;
+}
+
+
+Store.prototype.save = function() {
+  console.log('writing: ', this.path);
+  fs.writeFileSync(this.path, JSON.stringify(this.Store, null, 4));
+}
+
+function clone(data) {
+  return JSON.parse(JSON.stringify(data));
+}
+
+
+
 
