@@ -26,6 +26,10 @@ var convert = require('../lib/convert'),
 var output_dir = opts.dir || false;
 var sheet_file = opts.sheet || false;
 
+if (!opts.svg || opts.svg.length === 0) {
+	return console.log('Please provide a svg.');
+}
+
 if (output_dir) {
 	if (!fs.existsSync(output_dir)){
 		fs.mkdirSync(output_dir);
@@ -115,8 +119,8 @@ function processFile(name, cb) {
 		if (err) return cb(err);		
 		var path_str = convert(data);
 		var dest = destination(name, output_dir);
-		var name = path.basename(name, '.svg');
-		write(dest, path_str, name, cb);
+		var basename = path.basename(name, '.svg');
+		write(dest, path_str, basename, cb);
 	});	
 }
 
