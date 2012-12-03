@@ -1,16 +1,16 @@
 {
-	"name": "pathicon-from-svg",
+	"name": "svg2path",
 	"version": "0.0.1",
-	"description": "convert from svg to a path for use with raphael",
+	"description": "convert from svg to a path for icon sheets and also use with raphael",
 	"keywords" : [
-		"svg", "pathicon"
+		"svg", "pathicon", "raphael"
 	],
-	"homepage": "https://github.com/eckoit/pathicon-from-svg",
+	"homepage": "https://github.com/eckoit/svg2path",
 	"main": "lib/convert",
-	"bin" : "bin/pathiconize.js",
+	"bin" : "bin/svg2path.js",
 	"repository" : { 
 		"type" : "git",
-	    "url" : "http://github.com/ryanramage/pathicon-from-svg.git"
+	    "url" : "http://github.com/ryanramage/svg2path.git"
 	 },
 	 "dependencies": {
 	 	"async": "0.1.22",
