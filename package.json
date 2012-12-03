@@ -10,7 +10,7 @@
 	"bin" : "bin/svg2path.js",
 	"repository" : { 
 		"type" : "git",
-	    "url" : "http://github.com/ryanramage/svg2path.git"
+	    "url" : "http://github.com/eckoit/svg2path.git"
 	 },
 	 "dependencies": {
 	 	"async": "0.1.22",
